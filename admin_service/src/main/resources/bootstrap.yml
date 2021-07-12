@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: admin-service
+
+server:
+  port: 8081
+
+user-service:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.cloudbase.config.AlwaysFirstLoadBalanceRule
+#    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+
+
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+feign:
+  hystrix:
+    enabled: true #默认为false，如果为false,则使用ribbon的超时设置和重试机制，否则使用feign的相关设置
+  client:
+    config:
+      default:
+        #连接到目标的时间，此处会收到注册中心启动中的影响。设置为3秒钟，如果注册中心有明显的不在线，基本是毫秒级熔断拒绝
+        connectTimeout: 3000
+        #获取目标连接后执行的最长时间，设置为32秒，即服务最长时
+        readTimeout: 32000
+  circuitbreaker:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
